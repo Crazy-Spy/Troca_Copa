@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,6 +29,39 @@ const matchesContainer = document.getElementById('matches-container');
 // Event Listeners
 btnSave.addEventListener('click', handleSaveAndMatch);
 btnBack.addEventListener('click', showInputSection);
+
+// Initialization
+document.addEventListener('DOMContentLoaded', initializeAppOnLoad);
+
+async function initializeAppOnLoad() {
+    const savedUser = localStorage.getItem('tinderStickersUser');
+    if (savedUser) {
+        usernameInput.value = savedUser;
+
+        btnSave.disabled = true;
+        btnSave.textContent = "Carregando seus dados...";
+
+        try {
+            const docId = savedUser.replace(/\//g, '_');
+            const docRef = doc(db, "users", docId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.rawText) {
+                    stickersText.value = data.rawText;
+                }
+                showSuccess("Bem-vindo de volta! Buscando matches...");
+                await calculateAndShowMatches(data);
+            }
+        } catch (error) {
+            console.error("Error fetching user data on load: ", error);
+        } finally {
+            btnSave.disabled = false;
+            btnSave.textContent = "Salvar e Buscar Matches";
+        }
+    }
+}
 
 async function handleSaveAndMatch() {
     const username = usernameInput.value.trim();
@@ -62,8 +95,12 @@ async function handleSaveAndMatch() {
             name: username,
             repetidas: parsedData.repetidas,
             faltantes: parsedData.faltantes,
+            rawText: text,
             lastUpdated: new Date().toISOString()
         };
+
+        // Save username to localStorage
+        localStorage.setItem('tinderStickersUser', username);
 
         // 2. Save to Firestore
         // Use the sanitized username as the document ID so it overwrites on update, avoiding slashes
