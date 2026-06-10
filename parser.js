@@ -15,8 +15,10 @@ function parseStickersText(text) {
 
     // We will try to split the text into "Repetidas" and "Faltantes" sections.
     // Different apps use different keywords.
-    const repetidasKeywords = ['REPETIDAS', 'TENHO'];
-    const faltantesKeywords = ['FALTANTES', 'FALTANDO', 'I NEED', 'PRECISO DESSAS', 'PRECISO'];
+
+    const repetidasKeywords = ['REPETIDAS', 'TENHO', 'SWAP'];
+    const faltantesKeywords = ['FALTANTES', 'FALTANDO', 'I NEED', 'NEED', 'PRECISO DESSAS', 'PRECISO'];
+
 
     let lines = text.split('\n');
     let currentSection = null;
