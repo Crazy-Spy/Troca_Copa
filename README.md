@@ -17,34 +17,22 @@ Este projeto é feito puramente com HTML, CSS e JavaScript (Vanilla), sem framew
 
 ### Passo a Passo para Deploy no GitHub Pages
 
-1. **Crie um repositório** no seu GitHub e suba os arquivos desta pasta `src/` para ele (ou para a raiz do repositório).
+1. **Crie um repositório** no seu GitHub e suba os arquivos para a raiz do repositório.
 2. Vá nas **Settings (Configurações)** do seu repositório no GitHub.
 3. No menu lateral, clique em **Pages**.
-4. Em "Source" (ou "Build and deployment"), selecione a branch `main` e a pasta `root` (ou a pasta onde você colocou os arquivos html).
+4. Em "Source" (ou "Build and deployment"), selecione a branch `main` e a pasta `root`.
 5. Clique em **Save**. Em alguns minutos, seu site estará no ar!
 
-## Configuração do Firebase Firestore
+## Segurança (Importante)
 
-Para que os dados sejam salvos e compartilhados entre todos que acessam o link, o aplicativo utiliza o Firebase. As configurações iniciais já estão no arquivo `src/app.js`, porém, **é crucial configurar as Regras de Segurança (Rules)** no painel do Firebase para permitir leitura e escrita, já que o app não utiliza sistema de autenticação por e-mail/senha.
+Como este é um aplicativo 100% frontend, as chaves do Firebase ficam visíveis no código. Isso é normal, mas para evitar que outras pessoas usem suas chaves em outros sites (o que pode gerar cobranças), **você deve restringir sua Chave de API**:
 
-1. Acesse o [Console do Firebase](https://console.firebase.google.com/) e entre no projeto `trocacopa-e1071`.
-2. No menu lateral esquerdo, vá em **Firestore Database**.
-3. (Se ainda não tiver criado o banco, clique em "Create database" e inicie no "Modo de Teste" ou "Production mode").
-4. Vá na aba **Rules (Regras)**.
-5. Altere as regras para permitir leitura e escrita públicas (para fins de um app fechado entre amigos, isso é suficiente):
+1. Acesse o [Google Cloud Console (Credenciais)](https://console.cloud.google.com/apis/credentials).
+2. Selecione o projeto associado ao seu Firebase.
+3. Clique na **Chave de API do Navegador** (Browser Key).
+4. Em **Restrições de aplicativo**, selecione **Referenciadores HTTP (Sites)**.
+5. Adicione a URL do seu GitHub Pages: `*seu-usuario.github.io/*` (ex: `*crazy-spy.github.io/*`).
+6. Se for testar localmente, adicione também `localhost/*` ou `127.0.0.1/*`.
+7. Salve as alterações.
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      // PERMITE LEITURA E ESCRITA PARA TODOS
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-6. Clique em **Publish (Publicar)**.
-
-Pronto! Agora o aplicativo conseguirá salvar as listas e buscar os matches perfeitamente.
+Assim, seu banco de dados estará seguro contra uso em sites de terceiros.
