@@ -14,12 +14,3 @@ Este aplicativo permite que cada pessoa cole a lista exportada do seu aplicativo
 ## Como rodar o projeto
 
 Este projeto é feito puramente com HTML, CSS e JavaScript (Vanilla), sem frameworks pesados, o que o torna perfeito para ser hospedado gratuitamente no **GitHub Pages**.
-
-### Passo a Passo para Deploy no GitHub Pages
-
-1. **Crie um repositório** no seu GitHub e suba os arquivos para a raiz do repositório.
-2. Vá nas **Settings (Configurações)** do seu repositório no GitHub.
-3. No menu lateral, clique em **Pages**.
-4. Em "Source" (ou "Build and deployment"), selecione a branch `main` e a pasta `root`.
-5. Clique em **Save**. Em alguns minutos, seu site estará no ar!
-
