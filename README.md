@@ -20,4 +20,3 @@ O **Troca Copa** é um web app ultra simples, rodando direto no navegador, feito
 ## 💻 Para os Nerds (Tecnologia)
 * 100% Client-side.
 * Feito com HTML, CSS e JavaScript puro (Vanilla).
-* Sem banco de dados, sem backend, sem complicação. Atualizou a página, sumiu tudo.
