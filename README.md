@@ -1,22 +1,16 @@
-# 🏆 Troca Copa
+# Tinder Stickers ⚽
 
-Chega de ficar vesgo tentando cruzar as listas de figurinhas no grupo do WhatsApp! 
+Uma aplicação web simples para ajudar grupos de amigos a trocarem figurinhas da Copa do Mundo!
 
-O **Troca Copa** é um web app ultra simples, rodando direto no navegador, feito para ler aquelas listas bizarras cheias de emojis, parênteses e texto sujo que os mais diversos aplicativos de gerenciamento de figurinhas cospem. Ele pega a sua bagunça, cruza com a bagunça dos seus amigos e diz exatamente quem tem o cromo que você precisa para fechar essa joça.
+Este aplicativo permite que cada pessoa cole a lista exportada do seu aplicativo de gerenciamento de figurinhas (sejam faltantes ou repetidas) e cruza as informações de todos os usuários em tempo real para encontrar os melhores "matches" de troca.
 
-## 🚀 O que essa belezinha faz?
-* Aceita texto exportado de praticamente qualquer app de figurinhas.
-* Limpa toda a sujeira usando feitiçaria (Expressões Regulares).
-* Separa automaticamente o que é **Faltante** do que é **Repetida**.
-* Faz o cruzamento de dados e te avisa: *O CrazySpy tem a figurinha que o Felps precisa*.
+## Funcionalidades
 
-## 🛠️ Como usar
-1. Acesse o link do projeto (que está rodando lindamente no GitHub Pages).
-2. Digite o seu nome.
-3. Cole o texto gigante e zoado que você copiou do seu app.
-4. Adicione as listas da galera.
-5. Deixe o sistema mastigar os dados e te dar a lista pronta de quem trocar com quem.
+- **Parser Inteligente:** Entende listas exportadas de vários aplicativos diferentes (como Figuritas App, Moovtech, etc.). Ele limpa emojis, formatações estranhas e pega direto os códigos e números.
+- **Banco em Nuvem:** Usa Firebase Firestore para salvar as listas de todos os usuários e cruzar os dados instantaneamente.
+- **Matches:** Mostra claramente "Você tem X figurinhas que o Fulano quer" e "O Fulano tem Y figurinhas que você quer".
+- **Sem Login Complexo:** Basta digitar seu nome, colar a lista e pronto. O app usa o nome como identificador único.
 
-## 💻 Para os Nerds (Tecnologia)
-* 100% Client-side.
-* Feito com HTML, CSS e JavaScript puro (Vanilla).
+## Como rodar o projeto
+
+Este projeto é feito puramente com HTML, CSS e JavaScript (Vanilla), sem frameworks pesados, o que o torna perfeito para ser hospedado gratuitamente no **GitHub Pages**.
