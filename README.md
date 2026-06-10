@@ -23,16 +23,3 @@ Este projeto é feito puramente com HTML, CSS e JavaScript (Vanilla), sem framew
 4. Em "Source" (ou "Build and deployment"), selecione a branch `main` e a pasta `root`.
 5. Clique em **Save**. Em alguns minutos, seu site estará no ar!
 
-## Segurança (Importante)
-
-Como este é um aplicativo 100% frontend, as chaves do Firebase ficam visíveis no código. Isso é normal, mas para evitar que outras pessoas usem suas chaves em outros sites (o que pode gerar cobranças), **você deve restringir sua Chave de API**:
-
-1. Acesse o [Google Cloud Console (Credenciais)](https://console.cloud.google.com/apis/credentials).
-2. Selecione o projeto associado ao seu Firebase.
-3. Clique na **Chave de API do Navegador** (Browser Key).
-4. Em **Restrições de aplicativo**, selecione **Referenciadores HTTP (Sites)**.
-5. Adicione a URL do seu GitHub Pages: `*seu-usuario.github.io/*` (ex: `*crazy-spy.github.io/*`).
-6. Se for testar localmente, adicione também `localhost/*` ou `127.0.0.1/*`.
-7. Salve as alterações.
-
-Assim, seu banco de dados estará seguro contra uso em sites de terceiros.
