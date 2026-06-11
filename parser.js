@@ -13,12 +13,18 @@ function parseStickersText(text) {
     // Normalize text: remove emojis, convert to uppercase
     let normalizedText = text.toUpperCase().replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
 
+    const VALID_TEAMS = [
+        'FWC', 'CC', 'MEX', 'RSA', 'KOR', 'CZE', 'CAN', 'BIH', 'QAT', 'SUI',
+        'BRA', 'MAR', 'HAI', 'SCO', 'USA', 'PAR', 'AUS', 'TUR', 'GER', 'CUW',
+        'CIV', 'ECU', 'NED', 'JPN', 'SWE', 'TUN', 'BEL', 'EGY', 'IRN', 'NZL',
+        'ESP', 'CPV', 'KSA', 'URU', 'FRA', 'SEN', 'IRQ', 'NOR', 'ARG', 'ALG',
+        'AUT', 'JOR', 'POR', 'COD', 'UZB', 'COL', 'ENG', 'CRO', 'GHA', 'PAN'
+    ];
+
     // We will try to split the text into "Repetidas" and "Faltantes" sections.
     // Different apps use different keywords.
-
     const repetidasKeywords = ['REPETIDAS', 'TENHO', 'SWAP'];
     const faltantesKeywords = ['FALTANTES', 'FALTANDO', 'I NEED', 'NEED', 'PRECISO DESSAS', 'PRECISO'];
-
 
     let lines = text.split('\n');
     let currentSection = null;
@@ -120,10 +126,24 @@ function addSticker(team, num, section, repetidasSet, faltantesSet) {
     // Basic validation
     if (!team || isNaN(num)) return;
 
-    // Validate team codes (usually 3 letters, or CC)
-    if (team.length !== 3 && team !== 'CC') {
-        // Some FWC might come out weird, let's just accept 2 or 3 letters for now
-        if (team.length < 2 || team.length > 3) return;
+    const VALID_TEAMS = [
+        'FWC', 'CC', 'MEX', 'RSA', 'KOR', 'CZE', 'CAN', 'BIH', 'QAT', 'SUI',
+        'BRA', 'MAR', 'HAI', 'SCO', 'USA', 'PAR', 'AUS', 'TUR', 'GER', 'CUW',
+        'CIV', 'ECU', 'NED', 'JPN', 'SWE', 'TUN', 'BEL', 'EGY', 'IRN', 'NZL',
+        'ESP', 'CPV', 'KSA', 'URU', 'FRA', 'SEN', 'IRQ', 'NOR', 'ARG', 'ALG',
+        'AUT', 'JOR', 'POR', 'COD', 'UZB', 'COL', 'ENG', 'CRO', 'GHA', 'PAN'
+    ];
+
+    // Validate team code against strict list
+    if (!VALID_TEAMS.includes(team)) return;
+
+    // Strict numerical boundaries to prevent false positives from random text
+    if (team === 'FWC') {
+        if (num < 0 || num > 19) return;
+    } else if (team === 'CC') {
+        if (num < 1 || num > 14) return;
+    } else {
+        if (num < 1 || num > 20) return;
     }
 
     // Format strictly as TEAM-NUM
