@@ -2,78 +2,43 @@
  * Parser for World Cup 2026 Stickers
  */
 
-function parseStickersText(text) {
+function parseStickersText(repetidasText, faltantesText) {
     const result = {
         repetidas: [],
         faltantes: []
     };
 
-    if (!text) return result;
-
-    // Normalize text: remove emojis, convert to uppercase
-    let normalizedText = text.toUpperCase().replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
-
-    const VALID_TEAMS = [
-        'FWC', 'CC', 'MEX', 'RSA', 'KOR', 'CZE', 'CAN', 'BIH', 'QAT', 'SUI',
-        'BRA', 'MAR', 'HAI', 'SCO', 'USA', 'PAR', 'AUS', 'TUR', 'GER', 'CUW',
-        'CIV', 'ECU', 'NED', 'JPN', 'SWE', 'TUN', 'BEL', 'EGY', 'IRN', 'NZL',
-        'ESP', 'CPV', 'KSA', 'URU', 'FRA', 'SEN', 'IRQ', 'NOR', 'ARG', 'ALG',
-        'AUT', 'JOR', 'POR', 'COD', 'UZB', 'COL', 'ENG', 'CRO', 'GHA', 'PAN'
-    ];
-
-    // We will try to split the text into "Repetidas" and "Faltantes" sections.
-    // Different apps use different keywords.
-    const repetidasKeywords = ['REPETIDAS', 'TENHO', 'SWAP'];
-    const faltantesKeywords = ['FALTANTES', 'FALTANDO', 'I NEED', 'NEED', 'PRECISO DESSAS', 'PRECISO'];
-
-    let lines = text.split('\n');
-    let currentSection = null;
-
-    // A map to store parsed stickers for each section to avoid duplicates
     let repetidasSet = new Set();
     let faltantesSet = new Set();
 
+    if (repetidasText) {
+        parseLines(repetidasText, 'repetidas', repetidasSet, faltantesSet);
+    }
+
+    if (faltantesText) {
+        parseLines(faltantesText, 'faltantes', repetidasSet, faltantesSet);
+    }
+
+    result.repetidas = Array.from(repetidasSet).sort();
+    result.faltantes = Array.from(faltantesSet).sort();
+
+    return result;
+}
+
+function parseLines(text, currentSection, repetidasSet, faltantesSet) {
+    // Normalize text: remove emojis, convert to uppercase
+    let normalizedText = text.toUpperCase().replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
+    let lines = normalizedText.split('\n');
+
     for (let i = 0; i < lines.length; i++) {
-        let line = lines[i].toUpperCase();
+        let line = lines[i];
 
-        // Check if line indicates a section change
-        let isRepetidasHeader = repetidasKeywords.some(kw => line.includes(kw));
-        let isFaltantesHeader = faltantesKeywords.some(kw => line.includes(kw));
-
-        if (isRepetidasHeader && !isFaltantesHeader) {
-            currentSection = 'repetidas';
-            continue;
-        } else if (isFaltantesHeader && !isRepetidasHeader) {
-            currentSection = 'faltantes';
-            continue;
-        }
-
-        // Parse the line for stickers if we are in a section
-        // Example formats:
-        // MEX 🇲🇽: 1, 4, 13, 20
-        // FWC: 13(1x)
-        // BRA18
-        // UZB4, UZB10
-        // CC: 14(1x)
-        // Coleção Coca-Cola · pg. 111 \n CC7, CC8
-        // 🏆 FWC: 13
-
-        // Remove emojis and extra spaces from the line
-        let cleanLine = line.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').replace(/·.*/, '').trim();
+        // Remove extra spaces from the line and page indicators
+        let cleanLine = line.replace(/·.*/, '').trim();
 
         // Extract teams and numbers
-        // Regex matches:
-        // 1. A team code (3 letters or CC) followed by an optional colon and numbers
-        // 2. A team code directly followed by a number (e.g. BRA18)
-
-        // Let's try to find patterns like "TEAM: num, num, num"
         let listPattern = /([A-Z]{2,3})\s*:?\s*([\d,\s\(\)xX]+)/g;
-        let match;
-
         let foundStickers = false;
-
-        // Reset regex state
-        listPattern.lastIndex = 0;
 
         // Let's first parse standard list format "TEAM : 1, 2, 3"
         if (cleanLine.includes(':')) {
@@ -91,7 +56,6 @@ function parseStickersText(text) {
 
         // If not standard list format, try to match individual stickers like "BRA18" or "UZB4, UZB10"
         if (!foundStickers) {
-            // Match any 2-3 uppercase letters followed immediately by 1-2 digits
             let singlePattern = /([A-Z]{2,3})\s*(\d{1,2})/g;
             let singleMatch;
             while ((singleMatch = singlePattern.exec(cleanLine)) !== null) {
@@ -101,11 +65,6 @@ function parseStickersText(text) {
             }
         }
     }
-
-    result.repetidas = Array.from(repetidasSet).sort();
-    result.faltantes = Array.from(faltantesSet).sort();
-
-    return result;
 }
 
 function extractNumbers(text) {

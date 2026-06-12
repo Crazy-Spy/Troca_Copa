@@ -22,7 +22,8 @@ const matchesSection = document.getElementById('matches-section');
 const btnSave = document.getElementById('btn-save');
 const btnBack = document.getElementById('btn-back');
 const usernameInput = document.getElementById('username');
-const stickersText = document.getElementById('stickers-text');
+const stickersFaltantes = document.getElementById('stickers-faltantes');
+const stickersRepetidas = document.getElementById('stickers-repetidas');
 const statusMessage = document.getElementById('status-message');
 const matchesContainer = document.getElementById('matches-container');
 
@@ -48,8 +49,15 @@ async function initializeAppOnLoad() {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                if (data.rawText) {
-                    stickersText.value = data.rawText;
+                if (data.rawFaltantes) {
+                    stickersFaltantes.value = data.rawFaltantes;
+                }
+                if (data.rawRepetidas) {
+                    stickersRepetidas.value = data.rawRepetidas;
+                }
+                // Try to load old data format if it exists
+                if (data.rawText && !data.rawFaltantes && !data.rawRepetidas) {
+                     stickersRepetidas.value = data.rawText;
                 }
                 showSuccess("Bem-vindo de volta! Buscando matches...");
                 await calculateAndShowMatches(data);
@@ -65,14 +73,15 @@ async function initializeAppOnLoad() {
 
 async function handleSaveAndMatch() {
     const username = usernameInput.value.trim();
-    const text = stickersText.value.trim();
+    const textFaltantes = stickersFaltantes.value.trim();
+    const textRepetidas = stickersRepetidas.value.trim();
 
     if (!username) {
         showError("Por favor, insira seu nome.");
         return;
     }
-    if (!text) {
-        showError("Por favor, cole as listas de figurinhas.");
+    if (!textFaltantes && !textRepetidas) {
+        showError("Por favor, preencha pelo menos uma das listas de figurinhas.");
         return;
     }
 
@@ -82,10 +91,10 @@ async function handleSaveAndMatch() {
 
     try {
         // 1. Parse text
-        const parsedData = window.parseStickersText(text);
+        const parsedData = window.parseStickersText(textRepetidas, textFaltantes);
 
         if (parsedData.repetidas.length === 0 && parsedData.faltantes.length === 0) {
-            showError("Não conseguimos encontrar figurinhas no texto. Verifique o formato.");
+            showError("Não conseguimos encontrar figurinhas válidas no texto.");
             btnSave.disabled = false;
             btnSave.textContent = "Salvar e Buscar Matches";
             return;
@@ -95,7 +104,8 @@ async function handleSaveAndMatch() {
             name: username,
             repetidas: parsedData.repetidas,
             faltantes: parsedData.faltantes,
-            rawText: text,
+            rawFaltantes: textFaltantes,
+            rawRepetidas: textRepetidas,
             lastUpdated: new Date().toISOString()
         };
 
