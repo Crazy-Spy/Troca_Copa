@@ -182,6 +182,7 @@ async function calculateAndShowMatches(currentUserData) {
                     otherUserName: otherUser.name,
                     predio: otherUser.predio || 'N/A',
                     andar: otherUser.andar || 'N/A',
+                    lastUpdated: otherUser.lastUpdated || null,
                     iNeedTheyHave: iNeedTheyHave,
                     theyNeedIHave: theyNeedIHave
                 });
@@ -220,11 +221,21 @@ function renderMatches(currentUserName, matches) {
 
         const safeCurrentUserName = escapeHTML(currentUserName);
         const safeOtherUserName = escapeHTML(match.otherUserName);
+
+        let dateStr = "";
+        if (match.lastUpdated) {
+            const d = new Date(match.lastUpdated);
+            dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+        }
+
         const safeLocation = escapeHTML(`${match.predio} - Andar ${match.andar}`);
 
         matchCard.innerHTML = `
             <div class="match-header">
-                <span>${safeCurrentUserName} 🤝 ${safeOtherUserName} <small style="font-weight: normal; color: #666; font-size: 0.85rem;">(${safeLocation})</small></span>
+                <div style="display: flex; flex-direction: column;">
+                    <span>${safeCurrentUserName} 🤝 ${safeOtherUserName} <small style="font-weight: normal; color: #666; font-size: 0.85rem;">(${safeLocation})</small></span>
+                    ${dateStr ? `<small style="font-weight: normal; color: #888; font-size: 0.75rem; margin-top: 0.2rem;">Atualizado em: ${escapeHTML(dateStr)}</small>` : ''}
+                </div>
             </div>
             <div class="match-details">
                 <div class="match-side give">
