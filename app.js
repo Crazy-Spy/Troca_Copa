@@ -25,6 +25,8 @@ const btnBack = document.getElementById('btn-back');
 const btnAdminNav = document.getElementById('btn-admin-nav');
 const btnAdminBack = document.getElementById('btn-admin-back');
 const usernameInput = document.getElementById('username');
+const predioInput = document.getElementById('predio');
+const andarInput = document.getElementById('andar');
 const stickersFaltantes = document.getElementById('stickers-faltantes');
 const stickersRepetidas = document.getElementById('stickers-repetidas');
 const statusMessage = document.getElementById('status-message');
@@ -55,6 +57,12 @@ async function initializeAppOnLoad() {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                if (data.predio) {
+                    predioInput.value = data.predio;
+                }
+                if (data.andar) {
+                    andarInput.value = data.andar;
+                }
                 if (data.rawFaltantes) {
                     stickersFaltantes.value = data.rawFaltantes;
                 }
@@ -79,11 +87,17 @@ async function initializeAppOnLoad() {
 
 async function handleSaveAndMatch() {
     const username = usernameInput.value.trim();
+    const predio = predioInput.value;
+    const andar = andarInput.value.trim();
     const textFaltantes = stickersFaltantes.value.trim();
     const textRepetidas = stickersRepetidas.value.trim();
 
     if (!username) {
         showError("Por favor, insira seu nome.");
+        return;
+    }
+    if (!andar) {
+        showError("Por favor, informe o seu andar.");
         return;
     }
     if (!textFaltantes && !textRepetidas) {
@@ -108,6 +122,8 @@ async function handleSaveAndMatch() {
 
         const userData = {
             name: username,
+            predio: predio,
+            andar: andar,
             repetidas: parsedData.repetidas,
             faltantes: parsedData.faltantes,
             rawFaltantes: textFaltantes,
@@ -164,6 +180,8 @@ async function calculateAndShowMatches(currentUserData) {
             if (iNeedTheyHave.length > 0 || theyNeedIHave.length > 0) {
                 matches.push({
                     otherUserName: otherUser.name,
+                    predio: otherUser.predio || 'N/A',
+                    andar: otherUser.andar || 'N/A',
                     iNeedTheyHave: iNeedTheyHave,
                     theyNeedIHave: theyNeedIHave
                 });
@@ -202,10 +220,11 @@ function renderMatches(currentUserName, matches) {
 
         const safeCurrentUserName = escapeHTML(currentUserName);
         const safeOtherUserName = escapeHTML(match.otherUserName);
+        const safeLocation = escapeHTML(`${match.predio} - Andar ${match.andar}`);
 
         matchCard.innerHTML = `
             <div class="match-header">
-                <span>${safeCurrentUserName} 🤝 ${safeOtherUserName}</span>
+                <span>${safeCurrentUserName} 🤝 ${safeOtherUserName} <small style="font-weight: normal; color: #666; font-size: 0.85rem;">(${safeLocation})</small></span>
             </div>
             <div class="match-details">
                 <div class="match-side give">
