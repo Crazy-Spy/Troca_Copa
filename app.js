@@ -278,9 +278,12 @@ async function loadAdminUsers() {
                 dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString();
             }
 
+            const safePredio = escapeHTML(data.predio || 'N/A');
+            const safeAndar = escapeHTML(data.andar || 'N/A');
+
             row.innerHTML = `
                 <div class="admin-user-info">
-                    <span class="admin-user-name">${escapeHTML(data.name || 'Sem nome')}</span>
+                    <span class="admin-user-name">${escapeHTML(data.name || 'Sem nome')} <small style="font-weight: normal; color: #666; font-size: 0.85rem;">(${safePredio} - Andar ${safeAndar})</small></span>
                     <span class="admin-user-date">Atualizado em: ${dateStr}</span>
                 </div>
                 <button class="btn-delete" data-id="${escapeHTML(docId)}">Deletar</button>
