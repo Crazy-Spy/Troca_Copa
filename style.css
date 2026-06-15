@@ -91,20 +91,32 @@ header h1 {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ccc;
     border-radius: var(--border-radius);
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
+    background-color: white;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.row-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.half-width {
+    flex: 1;
 }
 
 button {
