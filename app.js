@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,17 +19,23 @@ const db = getFirestore(app);
 // Elements
 const inputSection = document.getElementById('input-section');
 const matchesSection = document.getElementById('matches-section');
+const adminSection = document.getElementById('admin-section');
 const btnSave = document.getElementById('btn-save');
 const btnBack = document.getElementById('btn-back');
+const btnAdminNav = document.getElementById('btn-admin-nav');
+const btnAdminBack = document.getElementById('btn-admin-back');
 const usernameInput = document.getElementById('username');
 const stickersFaltantes = document.getElementById('stickers-faltantes');
 const stickersRepetidas = document.getElementById('stickers-repetidas');
 const statusMessage = document.getElementById('status-message');
 const matchesContainer = document.getElementById('matches-container');
+const adminUsersContainer = document.getElementById('admin-users-container');
 
 // Event Listeners
 btnSave.addEventListener('click', handleSaveAndMatch);
 btnBack.addEventListener('click', showInputSection);
+btnAdminNav.addEventListener('click', showAdminSection);
+btnAdminBack.addEventListener('click', showInputSection);
 
 // Initialization
 document.addEventListener('DOMContentLoaded', initializeAppOnLoad);
@@ -228,14 +234,85 @@ function escapeHTML(str) {
     );
 }
 
+// Admin Logic
+async function loadAdminUsers() {
+    adminUsersContainer.innerHTML = "<p>Carregando usuários...</p>";
+    try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        adminUsersContainer.innerHTML = "";
+
+        if (querySnapshot.empty) {
+            adminUsersContainer.innerHTML = "<p>Nenhum usuário cadastrado.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const docId = doc.id;
+
+            const row = document.createElement('div');
+            row.className = 'admin-user-row';
+
+            let dateStr = "Desconhecida";
+            if (data.lastUpdated) {
+                const d = new Date(data.lastUpdated);
+                dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+            }
+
+            row.innerHTML = `
+                <div class="admin-user-info">
+                    <span class="admin-user-name">${escapeHTML(data.name || 'Sem nome')}</span>
+                    <span class="admin-user-date">Atualizado em: ${dateStr}</span>
+                </div>
+                <button class="btn-delete" data-id="${escapeHTML(docId)}">Deletar</button>
+            `;
+            adminUsersContainer.appendChild(row);
+        });
+
+        // Attach delete events
+        const deleteButtons = adminUsersContainer.querySelectorAll('.btn-delete');
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const idToDelete = e.target.getAttribute('data-id');
+                if (confirm(`Tem certeza que deseja deletar o usuário ${idToDelete}?`)) {
+                    e.target.disabled = true;
+                    e.target.textContent = "Deletando...";
+                    try {
+                        await deleteDoc(doc(db, "users", idToDelete));
+                        loadAdminUsers(); // Refresh
+                    } catch (err) {
+                        console.error("Error deleting doc: ", err);
+                        alert("Erro ao deletar.");
+                        e.target.disabled = false;
+                        e.target.textContent = "Deletar";
+                    }
+                }
+            });
+        });
+
+    } catch (error) {
+        console.error("Error loading admin users: ", error);
+        adminUsersContainer.innerHTML = "<p class='error'>Erro ao carregar usuários.</p>";
+    }
+}
+
 function showInputSection() {
     inputSection.classList.remove('hidden');
     matchesSection.classList.add('hidden');
+    adminSection.classList.add('hidden');
 }
 
 function showMatchesSection() {
     inputSection.classList.add('hidden');
     matchesSection.classList.remove('hidden');
+    adminSection.classList.add('hidden');
+}
+
+function showAdminSection() {
+    inputSection.classList.add('hidden');
+    matchesSection.classList.add('hidden');
+    adminSection.classList.remove('hidden');
+    loadAdminUsers();
 }
 
 function showError(msg) {
